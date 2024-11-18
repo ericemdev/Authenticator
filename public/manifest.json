@@ -1,0 +1,40 @@
+{
+  "name": "2FA",
+  "short_name": "PWA",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "A Progressive Web App for 2FA",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#fee2e2",
+  "theme_color": "#db4938",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "background": {
+    "service_worker": "serviceworker.js"
+  },
+  "permissions": [
+    "storage",
+    "notifications",
+    "background"
+  ],
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "/icon-16.png",
+      "48": "/icon-48.png",
+      "128": "/icon-128.png"
+    }
+  }
+}

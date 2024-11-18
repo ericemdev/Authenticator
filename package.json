@@ -1,0 +1,27 @@
+{
+  "name": "Authenticator",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "d": "vite build && firebase deploy",
+    "start": "vite --single"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "jssha": "^3.3.1",
+    "postcss": "^8.4.25",
+    "svelte": "^3.59.2",
+    "tailwindcss": "^3.3.2",
+    "vite": "^5.4.10"
+  },
+  "dependencies": {
+    "@sveltejs/vite-plugin-svelte": "^1.4.0",
+    "crypto-js": "^4.2.0",
+    "firebase": "^10.9.0",
+    "html5-qrcode": "^2.3.8",
+    "page": "^1.11.6"
+  }
+}
