@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import generateOTP from '../totp.js';
     import { Html5QrcodeScanner } from "html5-qrcode";
 
@@ -16,6 +16,7 @@
     let code = { issuer: '', secret: '', name: '' };
     let showForm = false;
     let codes = [];
+    let scanner;
 
     // view once
     let tempCode = null;
@@ -71,17 +72,29 @@
 
 
     const scan = () => {
-        const scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 250, height: 250 } }, false);
-        scanner.render((scanned) => {
-            code.issuer = scanned.split("totp/")[1]?.split("?")[0];
-            code.secret = scanned.split("secret=")[1]?.split("&")[0];
-            code.name = scanned.split("issuer=")[1]?.split("&")[0] || code.issuer;
-            scanner.clear();
-        }, (error) => {
-            console.error(error);
-            alert("Failed to scan QR code. Please try again.");
-        });
+        scanner = new Html5QrcodeScanner(
+            "reader",
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            false
+        );
+
+        scanner.render(
+            (scanned) => {
+                code.issuer = scanned.split("totp/")[1]?.split("?")[0];
+                code.secret = scanned.split("secret=")[1]?.split("&")[0];
+                code.name = scanned.split("issuer=")[1]?.split("&")[0] || code.issuer;
+                scanner.clear();
+            },
+            (error) => {
+                console.error(error);
+                alert("Failed to scan QR code. Please try again.");
+            }
+        );
     };
+
+    onDestroy(() => {
+        scanner?.clear();
+    });
 
     function viewCode(id) {
         codes = codes.map(code => {
@@ -106,7 +119,7 @@
 
 <button
         on:click={toggleForm}
-        class="fixed right-6 rounded-full text-white p-2 z-[50]"
+        class="fixed right-6  rounded-full text-white p-2 z-[50]"
         class:bottom-6={!showFooter}
         class:bottom-20={showFooter}
         aria-label="Toggle Button"
