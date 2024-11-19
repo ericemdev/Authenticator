@@ -243,7 +243,7 @@
     <div class="flex flex-col md:flex-row">
         <Sidebar {codes} onExport={backup} onGoogleSync={syncWithGoogle} onImport={restore} onToggleExportPopup={toggleExportPopup} onToggleImportPopup={toggleImportPopup} />
         <div class="flex-1 p-4 order-1 md:order-none">
-            <Otp onGenerate={addGeneratedCode} />
+            <Otp onGenerate={addGeneratedCode} {showFooter} />
             <List
                     {codes}
                     onToggleSelection={toggleSelection}

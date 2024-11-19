@@ -3,6 +3,8 @@
     import generateOTP from '../totp.js';
     import { Html5QrcodeScanner } from "html5-qrcode";
 
+    export let showFooter = false;
+
     onMount(() => {
         loadFromLocalStorage();
     });
@@ -101,9 +103,20 @@
         }
     };
 </script>
-<button on:click={toggleForm} class="fixed bottom-16 right-6   rounded-full text-white  p-2 z-[50]">
+
+<button
+        on:click={toggleForm}
+        class="fixed right-6 rounded-full text-white p-2 z-[50]"
+        class:bottom-6={!showFooter}
+        class:bottom-20={showFooter}
+        aria-label="Toggle Button"
+>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="green" class="w-16 h-16">
-        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+        <path
+                fill-rule="evenodd"
+                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z"
+                clip-rule="evenodd"
+        />
     </svg>
 </button>
 
@@ -136,11 +149,11 @@
                 </svg>
             </button>
             <div class="flex justify-center space-x-4 mt-6">
-                <button on:click={viewOnceCode} class="bg-primary text-gary-800 font-medium py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:bg-secondary hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                <button on:click={viewOnceCode} class="bg-primary text-gary-800 font-medium py-3 px-6 rounded-lg  transition-transform transform hover:bg-secondary">
                     View Once
                 </button>
 
-                <button on:click={generateCode} class="bg-green-600 text-white font-medium py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:bg-green-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                <button on:click={generateCode} class="bg-green-600 text-white font-medium py-3 px-6 rounded-lg  transition-transform transform hover:bg-green-700">
                     Save
                 </button>
             </div>
