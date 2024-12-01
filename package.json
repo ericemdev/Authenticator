@@ -21,6 +21,7 @@
     "@sveltejs/vite-plugin-svelte": "^1.4.0",
     "crypto-js": "^4.2.0",
     "firebase": "^10.9.0",
+    "gapi-script": "^1.2.0",
     "html5-qrcode": "^2.3.8",
     "page": "^1.11.6"
   }

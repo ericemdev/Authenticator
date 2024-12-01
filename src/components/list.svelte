@@ -1,5 +1,7 @@
 <script>
-    import { onMount, onDestroy, createEventDispatcher} from 'svelte';
+    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+    import OTP from '../totp.js';
+
     const dispatch = createEventDispatcher();
 
     export let codes = [];
@@ -13,6 +15,18 @@
     let showSelectAll = false;
     let selectedCodes = new Set();
 
+    // Function to update the OTP codes and their remaining time
+    const updateOTP = () => {
+        codes = codes.map(code => {
+            const token = new OTP(code.secret);
+            return {
+                ...code,
+                code: token.getToken(),
+                remainingTime: Math.floor(token.getRemainingSeconds())
+            };
+        });
+    };
+
     const handleToggleSelection = (id) => {
         if (selectedCodes.has(id)) {
             selectedCodes.delete(id);
@@ -21,18 +35,16 @@
         }
         showSelectAll = selectedCodes.size > 0;
         onToggleSelection(id);
-        // Emit the selectionChanged event after handling Toggle Selection event-
         dispatch('selectionChanged', { selectedCodes: Array.from(selectedCodes) });
     };
 
-    const handleSelectAll =() => {
+    const handleSelectAll = () => {
         if (selectedCodes.size === codes.length) {
             selectedCodes.clear();
         } else {
             codes.forEach(code => selectedCodes.add(code.id));
         }
         showSelectAll = selectedCodes.size > 0;
-        // Emit the selectionChanged event after handling Select All
         dispatch('selectionChanged', { selectedCodes: Array.from(selectedCodes) });
     };
 
@@ -43,37 +55,27 @@
         }, 800);
     };
 
-    const handleLongPressEnd =() => {
+    const handleLongPressEnd = () => {
         clearTimeout(pressTimer);
     };
 
-    const handleCopy =(id, otp) => {
+    const handleCopy = (id, otp) => {
         copyingId = id;
         onCopy(otp);
         setTimeout(() => copyingId = null, 1500);
     };
 
-
-
-    // Update the remaining time for each code every second
     onMount(() => {
-        intervalId = setInterval(() => {
-            codes = codes.map(code => ({
-                ...code,
-                remainingTime: Math.max(code.remainingTime - 1, 0)
-            }));
-        }, 1000);
+        updateOTP();
+        intervalId = setInterval(updateOTP, 1000); // Update OTP codes every second
     });
 
     onDestroy(() => {
         clearInterval(intervalId);
     });
 
-    // Sort codes alphabetically by issuer
     $: sortedCodes = [...codes].sort((a, b) => a.issuer.localeCompare(b.issuer));
     $: showSelectAll = selectedCodes.size > 0 && selectedCodes.size < codes.length;
-
-    // Emit the selectionChanged event after handling Select All
     $: dispatch('selectionChanged', { selectedCodes: Array.from(selectedCodes) });
 </script>
 
@@ -86,7 +88,7 @@
                     checked={selectedCodes.size === codes.length}
                     class="mr-2"
             />
-            <label>Select All</label>
+            <label for="select-all">Select All</label>
         </div>
     {/if}
     <div class="md:container grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -96,10 +98,10 @@
                     on:mouseup={handleLongPressEnd}
                     on:touchstart={() => handleLongPressStart(code.id)}
                     on:touchend={handleLongPressEnd}
-                    class={`relative p-4 rounded-xl border flex flex-col justify-between space-y-2
-                    ${selectedCodes.has(code.id) ? 'bg-blue-100 dark:bg-blue-600' : 'bg-secondary dark:bg-[#263240] dark:border-b dark:shadow-md dark:text-primary'}`}
+                    class={`relative p-4 rounded-xl flex flex-col justify-between space-y-2
+                ${selectedCodes.has(code.id) ? 'bg-blue-100 dark:bg-gray-800' : 'bg-gray-100 dark:bg-[#2A3B47] dark:shadow-md dark:text-primary'}`}
             >
-                <!--My Timer display -->
+                <!-- My Timer display -->
                 <div class="absolute top-2 right-2 text-sm text-gray-500 font-medium">
                     {code.remainingTime}s
                 </div>
@@ -113,7 +115,7 @@
                                 on:change={() => handleToggleSelection(code.id)}
                                 class="h-3 w-3 rounded-full border-2 border-tertiary checked:bg-tertiary checked:border-tertiary mr-2"
                         />
-                        <p class="font-semibold text-xl truncate">{code.issuer}</p>
+                        <p class="font-semibold text-xl truncate dark:text-primary">{code.issuer}</p>
                     </div>
 
                     <div class="flex items-center justify-between">
