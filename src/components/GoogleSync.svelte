@@ -8,6 +8,7 @@
     function syncOTPs() {
         if (!clientInitialized) {
             initializeClient().then(() => {
+                console.log("Client initialized, syncing OTPs...");
                 syncOTPs();
             });
             return;
@@ -15,35 +16,42 @@
 
         const user = gapi.auth2.getAuthInstance().currentUser.get();
         if (!user.isSignedIn()) {
-            gapi.auth2.getAuthInstance().signIn().then(syncOTPs);
+            gapi.auth2.getAuthInstance().signIn().then(() => {
+                console.log("User signed in. Syncing OTPs...");
+                syncOTPs();
+            });
             return;
         }
 
         const authResponse = user.getAuthResponse();
-        console.log("User signed in:", user);
+        console.log("User signed in:", authResponse);
 
-        // Retrieve OTPs from local storage
-        const storedOTPs = JSON.parse(localStorage.getItem("otps")) || [];
+        const storedOTPs = JSON.parse(localStorage.getItem("otps") || "[]");
 
-        // Create a new file with OTPs in Google Drive
         const fileMetadata = {
             name: "OTPs.json",
             mimeType: "application/json",
         };
-        const fileContent = JSON.stringify(storedOTPs);
         const media = {
             mimeType: "application/json",
-            body: fileContent,
+            body: JSON.stringify(storedOTPs),
         };
 
-        gapi.client.drive.files.create({
-            resource: fileMetadata,
-            media: media,
-            fields: "id",
-        }).then((response) => {
-            console.log("File created:", response.result);
-        });
+        try {
+            gapi.client.drive.files.create({
+                resource: fileMetadata,
+                media: media,
+                fields: "id",
+            }).then((response) => {
+                console.log("File created successfully:", response.result);
+            });
+        } catch (error) {
+            console.error("Error syncing OTPs:", error);
+        }
     }
+
+
+
 
     async function initializeClient() {
         const CLIENT_ID = "50771926637-24s7b5md9vlk6kaiavd787nrt17d68v8.apps.googleusercontent.com";
